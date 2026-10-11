@@ -15,7 +15,6 @@ import javafx.scene.control.TextInputDialog;
 import javafx.stage.Stage;
 import javafx.animation.PauseTransition;
 import javafx.util.Duration;
-import javafx.scene.control.Alert;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -75,7 +74,6 @@ public class ManagementController {
         alert.setHeaderText(null);
         alert.setContentText(message);
 
-        // Define o cronómetro para 2 segundos
         PauseTransition delay = new PauseTransition(Duration.seconds(2));
         delay.setOnFinished(event -> alert.close());
 
