@@ -5,6 +5,8 @@ import com.emanuel.Appointment;
 import com.emanuel.Organizer; 
 import com.emanuel.CSVManager;
 import com.emanuel.exceptions.DuplicateItemException;
+import com.emanuel.exceptions.ItemNotFoundException;
+import com.emanuel.utils.DialogUtils;
 
 import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
@@ -17,7 +19,11 @@ import javafx.stage.Stage;
 import javafx.scene.control.Alert;
 import javafx.util.Duration;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainController 
@@ -76,6 +82,37 @@ public class MainController
     @FXML
     public void onAppointmentsButtonClick(ActionEvent event) 
     {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        List<String> oldAppointments = new ArrayList<>();
+
+        for (Appointment apt : appointmentOrganizer.getAllItems())
+        {
+            LocalDate aptDate = LocalDate.parse(apt.getDate(), formatter);
+
+            if (aptDate.isBefore(LocalDate.now()))
+            {
+                oldAppointments.add(apt.getIdentifier());
+            }
+        }
+
+        if (!oldAppointments.isEmpty())
+        {
+            for (String id : oldAppointments)
+            {
+                try
+                {
+                    appointmentOrganizer.remove(id);
+                }
+                catch (ItemNotFoundException e)
+                {
+                    System.out.println("Error removing old appointments: " + e.getMessage());
+                }
+
+                DialogUtils.showAlert("System notice", oldAppointments.size() + " past appointments were automatically removed");
+            }
+        }
+
         openManagementView(event, "Appointments", appointmentOrganizer);
     }
 
