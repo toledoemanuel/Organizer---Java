@@ -19,6 +19,8 @@ import javafx.util.Duration;
 import java.io.IOException;
 import java.util.Optional;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import com.emanuel.Contact;
 import com.emanuel.Appointment;
@@ -27,6 +29,7 @@ import com.emanuel.Schedulable;
 import com.emanuel.exceptions.DuplicateItemException;
 import com.emanuel.exceptions.InvalidItemException;
 import com.emanuel.exceptions.ItemNotFoundException;
+import com.emanuel.utils.DialogUtils;
 
 public class ManagementController {
 
@@ -122,7 +125,9 @@ public class ManagementController {
             String title = askInput("Add Appointment", "Title:");
             if (title == null) return;
 
-            String date = askInput("Add Appointment", "Date (e.g., DD/MM/YYYY):");
+            String today = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+
+            String date = askInput("Add Appointment", "Date (e.g., DD/MM/YYYY):", today);
             if (date == null) return;
 
             String time = askInput("Add Appointment", "Time (e.g., HH:MM):");
