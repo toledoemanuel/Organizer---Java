@@ -21,10 +21,12 @@ import javafx.util.Duration;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class MainController 
 {
@@ -88,11 +90,18 @@ public class MainController
 
         for (Appointment apt : appointmentOrganizer.getAllItems())
         {
-            LocalDate aptDate = LocalDate.parse(apt.getDate(), formatter);
-
-            if (aptDate.isBefore(LocalDate.now()))
+            try
             {
-                oldAppointments.add(apt.getIdentifier());
+                LocalDate aptDate = LocalDate.parse(apt.getDate(), formatter);
+    
+                if (aptDate.isBefore(LocalDate.now()))
+                {
+                    oldAppointments.add(apt.getIdentifier());
+                }
+            }
+            catch (DateTimeParseException e)
+            {
+                System.out.println("Warning: Skipped unparseable date for appointment " + apt.getTitle() + "-" + apt.getDate());
             }
         }
 
