@@ -12,6 +12,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 
+import javafx.collections.transformation.FilteredList;
+import javafx.scene.control.TextField;
+import javafx.scene.text.Text;
+
 import java.io.IOException;
 
 import com.emanuel.Contact;
@@ -43,7 +47,48 @@ public class ManagementController {
         this.sectionTitleLabel.setText(type);
         
         this.uiList = FXCollections.observableArrayList(this.currentOrganizer.getAllItems());
-        this.recordsListView.setItems(this.uiList);
+
+        FilteredList<Schedulable> filteredData = new FilteredList<>(uiList, b -> true);
+
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredData.setPredicate(item -> {
+                if (newValue == null || newValue.isEmpty())
+                {
+                    return true;
+                }
+
+                String lowerCaseFilter = newValue.toLowerCase();
+
+                if (item.getIdentifier().toLowerCase().contains(lowerCaseFilter))
+                {
+                    return true;
+                }
+
+                if (item instanceof Contact)
+                {
+                    Contact contact = (Contact) item;
+
+                    if (contact.getPhone().contains(lowerCaseFilter))
+                    {
+                        return true;
+                    }
+                }
+
+                if (item instanceof Appointment)
+                {
+                    Appointment appointment = (Appointment) item;
+
+                    if (appointment.getDate().contains(lowerCaseFilter) || appointment.getTime().contains(lowerCaseFilter))
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            });
+        });
+
+        this.recordsListView.setItems(filteredData);
 
         // Update on mouse double-click 
         this.recordsListView.setOnMouseClicked(event -> {
@@ -58,6 +103,9 @@ public class ManagementController {
     {
         this.uiList.setAll(this.currentOrganizer.getAllItems());
     }
+
+    @FXML 
+    private TextField searchField;
 
     @FXML
     public void onAddClick(ActionEvent event) 
@@ -134,7 +182,6 @@ public class ManagementController {
             DialogUtils.showAlert("No Selection", "Please select an item to remove.");
         }
     }
-
 
     @FXML
     public void onUpdateClick(ActionEvent event) 
