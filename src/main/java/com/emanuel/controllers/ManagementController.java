@@ -14,9 +14,6 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-
 import com.emanuel.Contact;
 import com.emanuel.Appointment;
 import com.emanuel.Organizer;
@@ -47,6 +44,14 @@ public class ManagementController {
         
         this.uiList = FXCollections.observableArrayList(this.currentOrganizer.getAllItems());
         this.recordsListView.setItems(this.uiList);
+
+        // Update on mouse double-click 
+        this.recordsListView.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2)
+            {
+                performUpdate();
+            }
+        });
     }
 
     private void refreshUI()
@@ -130,8 +135,14 @@ public class ManagementController {
         }
     }
 
+
     @FXML
     public void onUpdateClick(ActionEvent event) 
+    {
+        performUpdate();
+    }
+
+    private void performUpdate() 
     {
         Schedulable selectedItem = recordsListView.getSelectionModel().getSelectedItem();
         
