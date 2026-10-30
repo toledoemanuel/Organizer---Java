@@ -109,3 +109,18 @@
     -fx-text-fill: #1a1a1a;      
     -fx-font-weight: bold;      
 }
+
+.text-field {
+    -fx-background-color: #333333;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #888888;
+    -fx-background-radius: 6; /* Deixa as bordas arredondadas */
+    -fx-border-color: #444444;
+    -fx-border-radius: 6;
+    -fx-padding: 8 10 8 10;
+}
+
+.text-field:focused {
+    -fx-border-color: #4CAF50; 
+    -fx-background-color: #383838;
+}

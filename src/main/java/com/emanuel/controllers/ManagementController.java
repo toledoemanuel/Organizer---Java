@@ -14,7 +14,6 @@ import javafx.stage.Stage;
 
 import javafx.collections.transformation.FilteredList;
 import javafx.scene.control.TextField;
-import javafx.scene.text.Text;
 
 import java.io.IOException;
 
