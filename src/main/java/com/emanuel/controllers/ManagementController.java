@@ -84,9 +84,7 @@ public class ManagementController {
             String title = DialogUtils.askInput("Add Appointment", "Title:");
             if (title == null) return;
 
-            String today = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-
-            String date = DialogUtils.askInput("Add Appointment", "Date (e.g., DD/MM/YYYY):", today);
+            String date = DialogUtils.askDateInput("Add Appointment", "Date (e.g., DD/MM/YYYY):", "");
             if (date == null) return;
 
             String time = DialogUtils.askInput("Add Appointment", "Time (e.g., HH:MM):");
@@ -168,7 +166,7 @@ public class ManagementController {
                 String title = DialogUtils.askInput("Update Appointment", "Title:", currentAppointment.getTitle());
                 if (title == null) return;
                 
-                String date = DialogUtils.askInput("Update Appointment", "Date:", currentAppointment.getDate());
+                String date = DialogUtils.askDateInput("Update Appointment", "Date:", currentAppointment.getDate());
                 if (date == null) return;
                 
                 String time = DialogUtils.askInput("Update Appointment", "Time:", currentAppointment.getTime());
@@ -193,8 +191,6 @@ public class ManagementController {
             DialogUtils.showAlert("No Selection", "Please select an item to update.");
         }
     }
-
-
 
     @FXML
     public void onBackToMenuClick(ActionEvent event) 
