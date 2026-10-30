@@ -20,12 +20,12 @@ public class Contact implements Schedulable
         }
 
         this.name = name.trim();
-        this.phone = phone.trim();
+        this.phone = phone.replaceAll("[\\s()-]", "").trim();
     }
 
     private boolean validateName(String name)
     {
-        if (name == null)
+        if (name == null || name.trim().isEmpty())
         {
             return false;
         }
@@ -75,7 +75,7 @@ public class Contact implements Schedulable
             throw new InvalidItemException("Error: Invalid name format!");
         }
 
-        this.name = name;
+        this.name = name.trim();
     }
 
     public void setPhone(String phone)
@@ -86,7 +86,7 @@ public class Contact implements Schedulable
             throw new InvalidItemException("Error: Invalid phone format!");
         }
 
-        this.phone = phone;
+        this.phone = phone.replaceAll("[\\s()-]", "").trim();
     }
 
     @Override
