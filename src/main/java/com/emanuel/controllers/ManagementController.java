@@ -67,6 +67,17 @@ public class ManagementController {
         return result.orElse(null); 
     }
 
+    private String askInput(String title, String content, String defaultValue) 
+    {
+        TextInputDialog dialog = new TextInputDialog(defaultValue);
+        dialog.setTitle(title);
+        dialog.setHeaderText(null);
+        dialog.setContentText(content);
+        
+        Optional<String> result = dialog.showAndWait();
+        return result.orElse(null); 
+    }
+
     private void showSuccessAlert(String message) 
     {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -166,10 +177,12 @@ public class ManagementController {
         {
             if (currentType.equals("Contacts")) 
             {
-                String name = askInput("Update Contact", "New Name:");
+                Contact currentContact = (Contact) selectedItem;
+
+                String name = askInput("Update Contact", "Name:", currentContact.getName());
                 if (name == null) return;
                 
-                String phone = askInput("Update Contact", "New Phone:");
+                String phone = askInput("Update Contact", "Phone:", currentContact.getPhone());
                 if (phone == null) return;
 
                 try 
@@ -186,13 +199,15 @@ public class ManagementController {
             } 
             else if (currentType.equals("Appointments")) 
             {
-                String title = askInput("Update Appointment", "New Title:");
+                Appointment currentAppointment = (Appointment) selectedItem;
+
+                String title = askInput("Update Appointment", "Title:", currentAppointment.getTitle());
                 if (title == null) return;
                 
-                String date = askInput("Update Appointment", "New Date:");
+                String date = askInput("Update Appointment", "Date:", currentAppointment.getDate());
                 if (date == null) return;
                 
-                String time = askInput("Update Appointment", "New Time:");
+                String time = askInput("Update Appointment", "Time:", currentAppointment.getTime());
                 if (time == null) return;
 
                 try 
