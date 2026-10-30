@@ -4,7 +4,10 @@ import com.emanuel.exceptions.InvalidItemException;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoField;
 
 
 public class Appointment implements Schedulable
@@ -45,16 +48,25 @@ public class Appointment implements Schedulable
     public void setDate(String date) 
         throws InvalidItemException {
         
-        if (date == null || !date.matches("\\d{2}/\\d{2}/\\d{4}")) 
+        if (date == null) 
         {
-            throw new InvalidItemException("Error: Invalid date format. Use DD/MM/YYYY.");
+            throw new InvalidItemException("Error: Invalid date format. Use DD/MM/YYYY or DD/MM/YY.");
+        }
+
+        String regex = "^(0?[1-9]|[12][0-9]|3[01])/(0?[1-9]|1[0-2])/(\\d{2}|\\d{4})$";       
+        if (!date.matches(regex)) 
+        {
+            throw new InvalidItemException("Error: Invalid date format. Use DD/MM/YYYY or DD/MM/YY.");
         }
 
         try 
         {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            DateTimeFormatter flexibleFormatter = new DateTimeFormatterBuilder()
+                .appendPattern("d/M/")
+                .appendValueReduced(ChronoField.YEAR, 2, 4, 2000)
+                .toFormatter();
             
-            LocalDate appointmentDate = LocalDate.parse(date, formatter);
+            LocalDate appointmentDate = LocalDate.parse(date, flexibleFormatter);
             
             LocalDate today = LocalDate.now();
             
@@ -63,14 +75,15 @@ public class Appointment implements Schedulable
                 throw new InvalidItemException("Error: The appointment date cannot be in the past.");
             }
             
+            DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            this.date = appointmentDate.format(outputFormatter);
+            
         } 
-        
+
         catch (DateTimeParseException e) 
         {
             throw new InvalidItemException("Error: Invalid date values (e.g., day or month out of range).");
         }
-
-        this.date = date;
     }
 
     public String getTime()
