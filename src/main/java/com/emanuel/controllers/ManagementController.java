@@ -8,16 +8,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.TextInputDialog;
 import javafx.stage.Stage;
-import javafx.animation.PauseTransition;
-import javafx.util.Duration;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -59,91 +54,55 @@ public class ManagementController {
         this.uiList.setAll(this.currentOrganizer.getAllItems());
     }
 
-    private String askInput(String title, String content) 
-    {
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle(title);
-        dialog.setHeaderText(null);
-        dialog.setContentText(content);
-        
-        Optional<String> result = dialog.showAndWait();
-        return result.orElse(null); 
-    }
-
-    private String askInput(String title, String content, String defaultValue) 
-    {
-        TextInputDialog dialog = new TextInputDialog(defaultValue);
-        dialog.setTitle(title);
-        dialog.setHeaderText(null);
-        dialog.setContentText(content);
-        
-        Optional<String> result = dialog.showAndWait();
-        return result.orElse(null); 
-    }
-
-    private void showSuccessAlert(String message) 
-    {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Success");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-
-        PauseTransition delay = new PauseTransition(Duration.seconds(2));
-        delay.setOnFinished(event -> alert.close());
-
-        alert.show();
-        delay.play();
-    }
-
     @FXML
     public void onAddClick(ActionEvent event) 
     {
         if (currentType.equals("Contacts"))
         {
-            String name = askInput("Add Contact", "Name:");
+            String name = DialogUtils.askInput("Add Contact", "Name:");
             if (name == null) return; 
             
-            String phone = askInput("Add Contact", "Phone:");
+            String phone = DialogUtils.askInput("Add Contact", "Phone:");
             if (phone == null) return; 
 
             try 
             {
                 Contact newContact = new Contact(name, phone);
                 currentOrganizer.add(newContact); 
-                showSuccessAlert("Contact added successfully");
+                DialogUtils.showSuccessAlert("Contact added successfully");
                 refreshUI(); 
             } 
             
             catch (InvalidItemException | DuplicateItemException e) 
             { 
-                showAlert("Validation Error", e.getMessage());
+                DialogUtils.showAlert("Validation Error", e.getMessage());
             }
             
         } 
         else if (currentType.equals("Appointments"))
         {
-            String title = askInput("Add Appointment", "Title:");
+            String title = DialogUtils.askInput("Add Appointment", "Title:");
             if (title == null) return;
 
             String today = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
-            String date = askInput("Add Appointment", "Date (e.g., DD/MM/YYYY):", today);
+            String date = DialogUtils.askInput("Add Appointment", "Date (e.g., DD/MM/YYYY):", today);
             if (date == null) return;
 
-            String time = askInput("Add Appointment", "Time (e.g., HH:MM):");
+            String time = DialogUtils.askInput("Add Appointment", "Time (e.g., HH:MM):");
             if (time == null) return;
 
             try 
             {
                 Appointment newAppointment = new Appointment(title, date, time);
                 currentOrganizer.add(newAppointment);
-                showSuccessAlert("Appointment added successfully");
+                DialogUtils.showSuccessAlert("Appointment added successfully");
                 refreshUI();
             } 
             
             catch (InvalidItemException | DuplicateItemException e) 
             {
-                showAlert("Validation Error", e.getMessage());
+                DialogUtils.showAlert("Validation Error", e.getMessage());
             }
         }
     }
@@ -158,18 +117,18 @@ public class ManagementController {
             try 
             {
                 currentOrganizer.remove(selectedItem.getIdentifier());
-                showSuccessAlert("Item removed successfully");
+                DialogUtils.showSuccessAlert("Item removed successfully");
                 refreshUI();
             } 
             
             catch (ItemNotFoundException e) 
             {
-                showAlert("Error", e.getMessage());
+                DialogUtils.showAlert("Error", e.getMessage());
             }
         } 
         else
         {
-            showAlert("No Selection", "Please select an item to remove.");
+            DialogUtils.showAlert("No Selection", "Please select an item to remove.");
         }
     }
 
@@ -184,65 +143,58 @@ public class ManagementController {
             {
                 Contact currentContact = (Contact) selectedItem;
 
-                String name = askInput("Update Contact", "Name:", currentContact.getName());
+                String name = DialogUtils.askInput("Update Contact", "Name:", currentContact.getName());
                 if (name == null) return;
                 
-                String phone = askInput("Update Contact", "Phone:", currentContact.getPhone());
+                String phone = DialogUtils.askInput("Update Contact", "Phone:", currentContact.getPhone());
                 if (phone == null) return;
 
                 try 
                 {
                     Contact updatedContact = new Contact(name, phone);
                     currentOrganizer.update(selectedItem.getIdentifier(), updatedContact);
-                    showSuccessAlert("Contact updated successfully");
+                    DialogUtils.showSuccessAlert("Contact updated successfully");
                     refreshUI();
                 } 
                 
                 catch (InvalidItemException | ItemNotFoundException e) {
-                    showAlert("Validation Error", e.getMessage());
+                    DialogUtils.showAlert("Validation Error", e.getMessage());
                 }
             } 
             else if (currentType.equals("Appointments")) 
             {
                 Appointment currentAppointment = (Appointment) selectedItem;
 
-                String title = askInput("Update Appointment", "Title:", currentAppointment.getTitle());
+                String title = DialogUtils.askInput("Update Appointment", "Title:", currentAppointment.getTitle());
                 if (title == null) return;
                 
-                String date = askInput("Update Appointment", "Date:", currentAppointment.getDate());
+                String date = DialogUtils.askInput("Update Appointment", "Date:", currentAppointment.getDate());
                 if (date == null) return;
                 
-                String time = askInput("Update Appointment", "Time:", currentAppointment.getTime());
+                String time = DialogUtils.askInput("Update Appointment", "Time:", currentAppointment.getTime());
                 if (time == null) return;
 
                 try 
                 {
                     Appointment updatedAppointment = new Appointment(title, date, time);
                     currentOrganizer.update(selectedItem.getIdentifier(), updatedAppointment);
-                    showSuccessAlert("Appointment updated successfully");
+                    DialogUtils.showSuccessAlert("Appointment updated successfully");
                     refreshUI();
                 } 
                 
                 catch (InvalidItemException | ItemNotFoundException e)
                 {
-                    showAlert("Validation Error", e.getMessage());
+                    DialogUtils.showAlert("Validation Error", e.getMessage());
                 }
             }
         } 
         else 
         {
-            showAlert("No Selection", "Please select an item to update.");
+            DialogUtils.showAlert("No Selection", "Please select an item to update.");
         }
     }
 
-    private void showAlert(String title, String content) 
-    {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
+
 
     @FXML
     public void onBackToMenuClick(ActionEvent event) 
