@@ -8,7 +8,7 @@ import com.emanuel.exceptions.DuplicateItemException;
 import com.emanuel.exceptions.ItemNotFoundException;
 import com.emanuel.utils.DialogUtils;
 
-import javafx.animation.PauseTransition;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -16,8 +16,6 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.scene.control.Alert;
-import javafx.util.Duration;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -61,7 +59,7 @@ public class MainController
                     {
                         warningMessage.append(" - ").append(w).append("\n");
                     }
-                    showAlert("Warning: Corrupted Data Detected ", warningMessage.toString());
+                    DialogUtils.showWarningAlert("Warning: Corrupted Data Detected ", warningMessage.toString());
                 }
                 System.out.println("Data loaded successfully.");
 
@@ -131,27 +129,6 @@ public class MainController
         csvManager.saveAppointments(appointmentOrganizer.getAllItems());
     }
 
-    private void showTemporaryAlert(String title, String content, Runnable onFinished) 
-    {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-
-        PauseTransition delay = new PauseTransition(Duration.seconds(2));
-        delay.setOnFinished(event -> alert.close());
-
-        alert.setOnHidden(event -> {
-            if (onFinished != null) 
-            {
-                onFinished.run();
-            }
-        });
-
-        alert.show();
-        delay.play();
-    }
-
     @FXML
     public void onExitButtonClick() 
     {
@@ -160,7 +137,7 @@ public class MainController
         csvManager.saveContacts(contactOrganizer.getAllItems());
         csvManager.saveAppointments(appointmentOrganizer.getAllItems());
 
-        showTemporaryAlert("Data saved successfully. Exiting.", null, () -> System.exit(0));
+        DialogUtils.showTemporaryAlert("Data saved successfully. Exiting.", null, () -> System.exit(0));
     }
 
     private void openManagementView(ActionEvent event, String type, Organizer<?> organizer) 
@@ -176,21 +153,14 @@ public class MainController
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.show();
+
+            stage.setMinWidth(stage.getWidth() - stage.getScene().getWidth() + root.minWidth(-1));
+            stage.setMinHeight(stage.getHeight() - stage.getScene().getHeight() + root.minHeight(-1));
         } 
         
         catch (IOException e) 
         {
             e.printStackTrace();
         }
-    }
-
-    private void showAlert(String title, String content)
-    {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.getDialogPane().setMinHeight(javafx.scene.layout.Region.USE_PREF_SIZE);
-        alert.showAndWait();
     }
 }

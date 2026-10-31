@@ -22,6 +22,9 @@ public class Main extends Application {
         primaryStage.setTitle("Organizer");
         primaryStage.setScene(scene);
         primaryStage.show();
+        
+        primaryStage.setMinWidth(primaryStage.getWidth() - scene.getWidth() + root.minWidth(-1));
+        primaryStage.setMinHeight(primaryStage.getHeight() - scene.getHeight() + root.minHeight(-1));
     }
 
     public static void main(String[] args) {

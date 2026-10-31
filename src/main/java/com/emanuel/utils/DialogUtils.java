@@ -9,6 +9,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
+import javafx.scene.control.Alert;
+
 public class DialogUtils 
 {
     public static String askInput(String title, String content) 
@@ -89,5 +91,36 @@ public class DialogUtils
 
         Optional<String> result = dialog.showAndWait();
         return result.orElse(null);
+    }
+
+    public static void showWarningAlert(String title, String content)
+    {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.getDialogPane().setMinHeight(javafx.scene.layout.Region.USE_PREF_SIZE);
+        alert.showAndWait();
+    }
+
+    public static void showTemporaryAlert(String title, String content, Runnable onFinished) 
+    {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+
+        PauseTransition delay = new PauseTransition(Duration.seconds(2));
+        delay.setOnFinished(event -> alert.close());
+
+        alert.setOnHidden(event -> {
+            if (onFinished != null) 
+            {
+                onFinished.run();
+            }
+        });
+
+        alert.show();
+        delay.play();
     }
 }
