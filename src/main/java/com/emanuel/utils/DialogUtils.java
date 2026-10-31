@@ -35,29 +35,6 @@ public class DialogUtils
         return result.orElse(null); 
     }
 
-    public static void showSuccessAlert(String message) 
-    {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Success");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-
-        PauseTransition delay = new PauseTransition(Duration.seconds(2));
-        delay.setOnFinished(event -> alert.close());
-
-        alert.show();
-        delay.play();
-    }
-
-    public static void showAlert(String title, String content) 
-    {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
-
     public static String askDateInput(String title, String content, String defaultValue)
     {
         Dialog<String> dialog = new Dialog<>();
