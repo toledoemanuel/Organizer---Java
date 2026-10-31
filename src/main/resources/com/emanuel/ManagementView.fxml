@@ -9,6 +9,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
@@ -79,6 +80,7 @@
                      </font>
                   </Label>
                   <Region HBox.hgrow="ALWAYS" />
+                  <Button fx:id="viewButton" mnemonicParsing="false" onAction="#onViewToggleClick" style="-fx-padding: 5 12 5 12; -fx-font-size: 12px;" text="Calendar" />
                   <Button fx:id="sortButton" mnemonicParsing="false" onAction="#onSortToggleClick" style="-fx-padding: 5 12 5 12; -fx-font-size: 12px;" text="A → Z" />
                </children>
             </HBox>
@@ -89,6 +91,7 @@
                   <String fx:value="list-view" />
                </styleClass>
             </ListView>
+            <StackPane fx:id="calendarHolder" managed="false" visible="false" VBox.vgrow="ALWAYS" />
          </children>
       </VBox>
    </center>

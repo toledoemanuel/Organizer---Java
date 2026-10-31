@@ -19,7 +19,9 @@ import java.io.IOException;
 
 import javafx.collections.transformation.SortedList;
 import javafx.scene.control.Button;
+import javafx.scene.layout.StackPane;
 
+import com.emanuel.utils.CalendarView;
 import com.emanuel.Contact;
 import com.emanuel.Appointment;
 import com.emanuel.Organizer;
@@ -51,6 +53,14 @@ public class ManagementController {
     private SortedList<Schedulable> sortedData;
     private boolean ascending = true;
 
+    @FXML
+    private Button viewButton;
+
+    @FXML
+    private StackPane calendarHolder;
+
+    private CalendarView calendarView;
+    private boolean calendarMode = false;
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void initData(String type, Organizer<?> organizer) 
@@ -72,6 +82,17 @@ public class ManagementController {
 
         applySort();
 
+        if (type.equals("Appointments"))
+        {
+            calendarView = new CalendarView();
+            calendarHolder.getChildren().add(calendarView);
+            refreshCalendar();
+        }
+        else
+        {
+            show(viewButton, false);   // contacts have no calendar
+        }
+
         // Update on mouse double-click 
         this.recordsListView.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2)
@@ -84,6 +105,39 @@ public class ManagementController {
     private void refreshUI()
     {
         this.uiList.setAll(this.currentOrganizer.getAllItems());
+        refreshCalendar();
+    }
+
+    private void refreshCalendar()
+    {
+        if (calendarView != null)
+        {
+            calendarView.setAppointments(uiList);
+        }
+    }
+
+    private void show(Node node, boolean visible)
+    {
+        node.setVisible(visible);
+        node.setManaged(visible);
+    }
+
+    @FXML
+    public void onViewToggleClick(ActionEvent event)
+    {
+        calendarMode = !calendarMode;
+
+        if (calendarMode)
+        {
+            recordsListView.getSelectionModel().clearSelection();
+        }
+
+        show(recordsListView, !calendarMode);
+        show(searchField, !calendarMode);
+        show(sortButton, !calendarMode);
+        show(calendarHolder, calendarMode);
+
+        viewButton.setText(calendarMode ? "List" : "Calendar");
     }
 
     private void applySort()
