@@ -3,6 +3,8 @@ import java.util.Objects;
 import com.emanuel.exceptions.InvalidItemException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
@@ -42,6 +44,12 @@ public class Appointment implements Schedulable
     public String getDate()
     {
         return date;
+    }
+
+    public LocalDateTime getDateTime()
+    {
+        LocalDate d = LocalDate.parse(this.date, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        return LocalDateTime.of(d, LocalTime.parse(this.time));
     }
 
     public void setDate(String date) 
@@ -123,7 +131,7 @@ public class Appointment implements Schedulable
 
         if (!(obj instanceof Appointment))
         {
-            return true;
+            return false;
         }
 
         Appointment other = (Appointment) obj;

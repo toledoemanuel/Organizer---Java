@@ -67,16 +67,8 @@ public class ManagementController {
         this.sortedData = new SortedList<>(filteredData);
         this.recordsListView.setItems(sortedData);
 
-        if (type.equals("Contacts"))
-        {
-            applySort();
-        }
-        else
-        {
-            sortButton.setVisible(false);
-            sortButton.setManaged(false);
-        }
-
+        applySort();
+        
         // Update on mouse double-click 
         this.recordsListView.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2)
@@ -93,8 +85,16 @@ public class ManagementController {
 
     private void applySort()
     {
-        sortedData.setComparator(SortUtils.byName(ascending));
-        sortButton.setText(ascending ? "A → Z" : "Z → A");
+        if (currentType.equals("Contacts"))
+        {
+            sortedData.setComparator(SortUtils.byName(ascending));
+            sortButton.setText(ascending ? "A → Z" : "Z → A");
+        }
+        else
+        {
+            sortedData.setComparator(SortUtils.byDate(ascending));
+            sortButton.setText(ascending ? "Nearest first" : "Furthest first");
+        }
     }
 
     @FXML

@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.Locale;
 
 import com.emanuel.Schedulable;
+import com.emanuel.Appointment;
 
 public class SortUtils
 {
@@ -19,6 +20,15 @@ public class SortUtils
     {
         Comparator<Schedulable> comparator =
             (a, b) -> COLLATOR.compare(a.getIdentifier(), b.getIdentifier());
+
+        return ascending ? comparator : comparator.reversed();
+    }
+
+    public static Comparator<Schedulable> byDate(boolean ascending)
+    {
+        Comparator<Schedulable> comparator = Comparator
+            .comparing((Schedulable s) -> ((Appointment) s).getDateTime())
+            .thenComparing(byName(true));
 
         return ascending ? comparator : comparator.reversed();
     }
