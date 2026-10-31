@@ -1,16 +1,22 @@
 package com.emanuel.utils;
 
 import javafx.animation.FadeTransition;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
 import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
+import javafx.animation.Timeline;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.transform.Scale;
 import javafx.stage.Popup;
 import javafx.stage.Window;
 import javafx.util.Duration;
@@ -24,7 +30,6 @@ public class ToastUtils
         INFO("#3c3f41", 3.0),
         UNDO("#3c3f41", 6.0);
 
-
         private final String color;
         private final double seconds;
 
@@ -37,6 +42,7 @@ public class ToastUtils
 
     private static Popup currentPopup;
     private static SequentialTransition currentAnimation;
+    private static Timeline currentCountdown;
 
     public static void success(Node anchor, String message)
     {
@@ -74,13 +80,8 @@ public class ToastUtils
         label.setMaxWidth(320);
         label.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;");
 
-        HBox content = new HBox(16, label);
-        content.setAlignment(Pos.CENTER_LEFT);
-        content.setStyle(
-            "-fx-background-color: " + type.color + ";" +
-            "-fx-padding: 12 20 12 20;" +
-            "-fx-background-radius: 8;");
-        content.setEffect(new DropShadow(10, Color.rgb(0, 0, 0, 0.4)));
+        HBox row = new HBox(16, label);
+        row.setAlignment(Pos.CENTER_LEFT);
 
         if (actionText != null)
         {
@@ -94,11 +95,39 @@ public class ToastUtils
                 "-fx-cursor: hand;");
 
             actionButton.setOnAction(e -> {
-                dismissCurrent();
+                dismissCurrent();   
                 onAction.run();
             });
 
-            content.getChildren().add(actionButton);
+            row.getChildren().add(actionButton);
+        }
+
+        VBox content = new VBox(10, row);
+        content.setStyle(
+            "-fx-background-color: " + type.color + ";" +
+            "-fx-padding: 12 20 12 20;" +
+            "-fx-background-radius: 8;");
+        content.setEffect(new DropShadow(10, Color.rgb(0, 0, 0, 0.4)));
+
+        Timeline countdown = null;
+
+        if (actionText != null)
+        {
+            Region bar = new Region();
+            bar.setPrefHeight(3);
+            bar.setMinHeight(3);
+            bar.setMaxHeight(3);
+            bar.setMaxWidth(Double.MAX_VALUE); 
+            bar.setStyle("-fx-background-color: #5bc0de; -fx-background-radius: 2;");
+
+            Scale scale = new Scale(1, 1, 0, 0);
+            bar.getTransforms().add(scale);
+
+            countdown = new Timeline(
+                new KeyFrame(Duration.ZERO, new KeyValue(scale.xProperty(), 1)),
+                new KeyFrame(Duration.seconds(type.seconds), new KeyValue(scale.xProperty(), 0)));
+
+            content.getChildren().add(bar);
         }
 
         StackPane box = new StackPane(content);
@@ -116,6 +145,12 @@ public class ToastUtils
         FadeTransition fadeIn = new FadeTransition(Duration.millis(200), box);
         fadeIn.setToValue(1);
 
+        final Timeline barAnimation = countdown;
+        if (barAnimation != null)
+        {
+            fadeIn.setOnFinished(e -> barAnimation.play());
+        }
+
         PauseTransition stay = new PauseTransition(Duration.seconds(type.seconds));
 
         FadeTransition fadeOut = new FadeTransition(Duration.millis(400), box);
@@ -126,6 +161,7 @@ public class ToastUtils
 
         currentPopup = popup;
         currentAnimation = animation;
+        currentCountdown = countdown;
 
         popup.show(owner);
         animation.play();
@@ -136,6 +172,12 @@ public class ToastUtils
         if (currentAnimation != null)
         {
             currentAnimation.stop();
+        }
+
+        if (currentCountdown != null)
+        {
+            currentCountdown.stop();
+            currentCountdown = null;
         }
 
         if (currentPopup != null)
