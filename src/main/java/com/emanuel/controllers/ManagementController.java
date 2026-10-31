@@ -30,6 +30,7 @@ import com.emanuel.exceptions.ItemNotFoundException;
 import com.emanuel.utils.DialogUtils;
 import com.emanuel.utils.SearchFilter;
 import com.emanuel.utils.SortUtils;
+import com.emanuel.utils.ToastUtils;
 
 public class ManagementController {
 
@@ -68,7 +69,7 @@ public class ManagementController {
         this.recordsListView.setItems(sortedData);
 
         applySort();
-        
+
         // Update on mouse double-click 
         this.recordsListView.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2)
@@ -122,13 +123,13 @@ public class ManagementController {
             {
                 Contact newContact = new Contact(name, phone);
                 currentOrganizer.add(newContact); 
-                DialogUtils.showSuccessAlert("Contact added successfully");
+                ToastUtils.success(recordsListView, "Contact added successfully");
                 refreshUI(); 
             } 
             
             catch (InvalidItemException | DuplicateItemException e) 
             { 
-                DialogUtils.showAlert("Validation Error", e.getMessage());
+                ToastUtils.error(recordsListView, e.getMessage());
             }
             
         } 
@@ -147,13 +148,13 @@ public class ManagementController {
             {
                 Appointment newAppointment = new Appointment(title, date, time);
                 currentOrganizer.add(newAppointment);
-                DialogUtils.showSuccessAlert("Appointment added successfully");
+                ToastUtils.success(recordsListView, "Appointment added successfully");
                 refreshUI();
             } 
             
             catch (InvalidItemException | DuplicateItemException e) 
             {
-                DialogUtils.showAlert("Validation Error", e.getMessage());
+                ToastUtils.error(recordsListView, e.getMessage());
             }
         }
     }
@@ -168,18 +169,18 @@ public class ManagementController {
             try 
             {
                 currentOrganizer.remove(selectedItem.getIdentifier());
-                DialogUtils.showSuccessAlert("Item removed successfully");
+                ToastUtils.success(recordsListView,"Item removed successfully");
                 refreshUI();
             } 
             
             catch (ItemNotFoundException e) 
             {
-                DialogUtils.showAlert("Error", e.getMessage());
+                ToastUtils.error(recordsListView, e.getMessage());
             }
         } 
         else
         {
-            DialogUtils.showAlert("No Selection", "Please select an item to remove.");
+            ToastUtils.info(recordsListView, "Please select an item to remove.");
         }
     }
 
@@ -209,12 +210,13 @@ public class ManagementController {
                 {
                     Contact updatedContact = new Contact(name, phone);
                     currentOrganizer.update(selectedItem.getIdentifier(), updatedContact);
-                    DialogUtils.showSuccessAlert("Contact updated successfully");
+                    ToastUtils.success(recordsListView, "Contact updated successfully");
                     refreshUI();
                 } 
                 
-                catch (InvalidItemException | ItemNotFoundException e) {
-                    DialogUtils.showAlert("Validation Error", e.getMessage());
+                catch (InvalidItemException | ItemNotFoundException e) 
+                {
+                    ToastUtils.error(recordsListView, e.getMessage());
                 }
             } 
             else if (currentType.equals("Appointments")) 
@@ -234,19 +236,19 @@ public class ManagementController {
                 {
                     Appointment updatedAppointment = new Appointment(title, date, time);
                     currentOrganizer.update(selectedItem.getIdentifier(), updatedAppointment);
-                    DialogUtils.showSuccessAlert("Appointment updated successfully");
+                    ToastUtils.success(recordsListView, "Appointment updated successfully");
                     refreshUI();
                 } 
                 
                 catch (InvalidItemException | ItemNotFoundException e)
                 {
-                    DialogUtils.showAlert("Validation Error", e.getMessage());
+                    ToastUtils.error(recordsListView, e.getMessage());
                 }
             }
         } 
         else 
         {
-            DialogUtils.showAlert("No Selection", "Please select an item to update.");
+            ToastUtils.info(recordsListView, "Please select an item to update.");
         }
     }
 

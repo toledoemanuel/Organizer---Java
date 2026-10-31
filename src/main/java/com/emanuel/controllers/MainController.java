@@ -7,7 +7,7 @@ import com.emanuel.CSVManager;
 import com.emanuel.exceptions.DuplicateItemException;
 import com.emanuel.exceptions.ItemNotFoundException;
 import com.emanuel.utils.DialogUtils;
-
+import com.emanuel.utils.ToastUtils;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -117,7 +117,7 @@ public class MainController
                 }
 
             }
-            DialogUtils.showAlert("System notice", oldAppointments.size() + " past appointments were automatically removed");
+            ToastUtils.info((Node) event.getSource(), oldAppointments.size() + " past appointment(s) automatically removed");       
         }
 
         openManagementView(event, "Appointments", appointmentOrganizer);
