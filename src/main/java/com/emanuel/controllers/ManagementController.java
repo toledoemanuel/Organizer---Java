@@ -14,6 +14,8 @@ import javafx.stage.Stage;
 
 import javafx.collections.transformation.FilteredList;
 import javafx.scene.control.TextField;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import java.io.IOException;
 
@@ -85,21 +87,55 @@ public class ManagementController {
         if (type.equals("Appointments"))
         {
             calendarView = new CalendarView();
+            calendarView.setOnDayDoubleClick(this::addAppointmentOn);
             calendarHolder.getChildren().add(calendarView);
             refreshCalendar();
         }
         else
         {
-            show(viewButton, false);   // contacts have no calendar
+            show(viewButton, false);  
         }
 
-        // Update on mouse double-click 
         this.recordsListView.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2)
             {
                 performUpdate();
             }
         });
+    }
+
+    private void addAppointmentOn(LocalDate date)
+    {
+        if (date.isBefore(LocalDate.now()))
+        {
+            ToastUtils.info(recordsListView, "Appointments cannot be added in the past.");
+            return;
+        }
+
+        addAppointment(date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+    }
+
+    private void addAppointment(String defaultDate)
+    {
+        String title = DialogUtils.askInput("Add Appointment", "Title:");
+        if (title == null) return;
+
+        String date = DialogUtils.askDateInput("Add Appointment", "Date (e.g., DD/MM/YYYY):", defaultDate);
+        if (date == null) return;
+
+        String time = DialogUtils.askInput("Add Appointment", "Time (e.g., HH:MM):");
+        if (time == null) return;
+
+        try
+        {
+            currentOrganizer.add(new Appointment(title, date, time));
+            ToastUtils.success(recordsListView, "Appointment added successfully");
+            refreshUI();
+        }
+        catch (InvalidItemException | DuplicateItemException e)
+        {
+            ToastUtils.error(recordsListView, e.getMessage());
+        }
     }
 
     private void refreshUI()

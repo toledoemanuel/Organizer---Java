@@ -101,12 +101,22 @@ public class Appointment implements Schedulable
     public void setTime(String time)
         throws InvalidItemException{
 
-        if (time == null || !time.matches("([01]\\d|2[0-3]):[0-5]\\d"))
+        String error = "Error: Invalid time format or out of bounds. Use HH:MM (00:00 to 23:59).";
+
+        if (time == null)
         {
-            throw new InvalidItemException("Error: Invalid time format or out of bounds. Use HH:MM (00:00 to 23:59).");
+            throw new InvalidItemException(error);
         }
 
-        this.time = time;        
+        String clean = time.trim();
+
+        if (!clean.matches("([01]?\\d|2[0-3]):[0-5]\\d"))
+        {
+            throw new InvalidItemException(error);
+        }
+
+        String [] parts = clean.split(":");
+        this.time = String.format("%02d:%s", Integer.parseInt(parts[0]), parts[1]);        
     }
 
     @Override 

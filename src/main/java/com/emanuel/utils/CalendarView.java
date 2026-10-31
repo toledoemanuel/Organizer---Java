@@ -14,6 +14,7 @@ import java.util.Map;
 import com.emanuel.Appointment;
 import com.emanuel.Schedulable;
 
+import java.util.function.Consumer;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -43,6 +44,9 @@ public class CalendarView extends VBox
     private YearMonth currentMonth = YearMonth.now();
     private LocalDate selectedDate = null;
     private Map<LocalDate, List<Appointment>> appointmentsByDay = new HashMap<>();
+
+    private final Map<LocalDate, VBox> cellsByDate = new HashMap<>();
+    private Consumer<LocalDate> onDayDoubleClick;
 
     public CalendarView()
     {
@@ -129,7 +133,9 @@ public class CalendarView extends VBox
 
     private void render()
     {
+        
         grid.getChildren().clear();
+        cellsByDate.clear();
         monthLabel.setText(currentMonth.format(MONTH_FORMAT));
 
         for (int col = 0; col < 7; col++)
@@ -197,14 +203,39 @@ public class CalendarView extends VBox
             Tooltip.install(cell, new Tooltip(text.toString().trim()));
         }
 
-        cell.setOnMouseClicked(e ->
-        {
-            selectedDate = date;
-            render();
+        cellsByDate.put(date, cell);
+
+        cell.setOnMouseClicked(e -> {
+            selectDay(date);
+
+            if (e.getClickCount() == 2 && onDayDoubleClick != null)
+            {
+                onDayDoubleClick.accept(date);
+            }
+
             e.consume();
         });
 
         return cell;
+    }
+
+    private void selectDay(LocalDate date)
+    {
+        VBox previous = cellsByDate.get(selectedDate);
+        if (previous != null)
+        {
+            previous.getStyleClass().remove("calendar-cell-selected");
+        }
+
+        selectedDate = date;
+
+        VBox current = cellsByDate.get(date);
+        if (current != null && !current.getStyleClass().contains("calendar-cell-selected"))
+        {
+            current.getStyleClass().add("calendar-cell-selected");
+        }
+
+        renderDetails();
     }
 
     private void renderDetails()
@@ -248,4 +279,11 @@ public class CalendarView extends VBox
         label.getStyleClass().add(styleClass);
         return label;
     }
+
+    public void setOnDayDoubleClick(Consumer<LocalDate> handler)
+    {
+        this.onDayDoubleClick = handler;
+    }
+
+
 }
