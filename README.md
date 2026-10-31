@@ -67,11 +67,10 @@ To run directly from Maven during development:
 ```bash
 mvn javafx:run
 ```
-```
 
 ## Project structure
 
-```
+
 src/main/java/com/emanuel/
 ├── controllers/   # MainController, ManagementController
 ├── exceptions/    # DuplicateItemException, InvalidItemException, ItemNotFoundException
@@ -80,7 +79,7 @@ src/main/java/com/emanuel/
 ├── Schedulable.java, Contact.java, Appointment.java
 └── CSVManager.java
 src/main/resources/com/emanuel/   # FXML views and style.css
-```
+
 
 ## Built with
 
