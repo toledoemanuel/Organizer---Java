@@ -279,3 +279,57 @@
     -fx-font-weight: bold;
     -fx-padding: 1 7 1 7;
 }
+
+.calendar-cell
+{
+    -fx-cursor: hand;
+}
+
+.calendar-cell-selected
+{
+    -fx-border-color: #e0e0e0;
+}
+
+.calendar-detail,
+.calendar-detail > .viewport
+{
+    -fx-background-color: #333333;
+    -fx-background-radius: 6;
+}
+
+.calendar-detail
+{
+    -fx-border-color: #444444;
+    -fx-border-radius: 6;
+}
+
+.calendar-detail-box
+{
+    -fx-padding: 10 12 10 12;
+}
+
+.calendar-detail-title
+{
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+}
+
+.calendar-detail-time
+{
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #5bc0de;
+}
+
+.calendar-detail-item
+{
+    -fx-font-size: 13px;
+    -fx-text-fill: #e0e0e0;
+}
+
+.calendar-detail-hint
+{
+    -fx-font-size: 12px;
+    -fx-text-fill: #9a9a9a;
+}

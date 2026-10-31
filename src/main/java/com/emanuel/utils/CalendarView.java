@@ -18,6 +18,7 @@ import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -32,11 +33,15 @@ public class CalendarView extends VBox
     private static final String[] WEEKDAYS = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
     private static final DateTimeFormatter MONTH_FORMAT =
         DateTimeFormatter.ofPattern("MMMM yyyy", Locale.ENGLISH);
+    private static final DateTimeFormatter DETAIL_FORMAT =
+        DateTimeFormatter.ofPattern("EEEE, dd/MM/yyyy", Locale.ENGLISH);
 
     private final Label monthLabel = new Label();
     private final GridPane grid = new GridPane();
+    private final VBox detailBox = new VBox(6);
 
     private YearMonth currentMonth = YearMonth.now();
+    private LocalDate selectedDate = null;
     private Map<LocalDate, List<Appointment>> appointmentsByDay = new HashMap<>();
 
     public CalendarView()
@@ -77,13 +82,23 @@ public class CalendarView extends VBox
         for (int i = 0; i < 6; i++)
         {
             RowConstraints row = new RowConstraints();
-            row.setMinHeight(48);
+            row.setMinHeight(36);
             row.setVgrow(Priority.ALWAYS);
             grid.getRowConstraints().add(row);
         }
 
         VBox.setVgrow(grid, Priority.ALWAYS);
-        getChildren().addAll(header, grid);
+
+        detailBox.getStyleClass().add("calendar-detail-box");
+
+        ScrollPane detailScroll = new ScrollPane(detailBox);
+        detailScroll.setFitToWidth(true);
+        detailScroll.setMinHeight(90);
+        detailScroll.setPrefHeight(100);
+        detailScroll.setMaxHeight(120);
+        detailScroll.getStyleClass().add("calendar-detail");
+
+        getChildren().addAll(header, grid, detailScroll);
 
         render();
     }
@@ -135,6 +150,8 @@ public class CalendarView extends VBox
             LocalDate date = start.plusDays(i);
             grid.add(buildCell(date, today), i % 7, i / 7 + 1);
         }
+
+        renderDetails();
     }
 
     private VBox buildCell(LocalDate date, LocalDate today)
@@ -157,6 +174,11 @@ public class CalendarView extends VBox
             cell.getStyleClass().add("calendar-cell-today");
         }
 
+        if (date.equals(selectedDate))
+        {
+            cell.getStyleClass().add("calendar-cell-selected");
+        }
+
         List<Appointment> dayAppointments = appointmentsByDay.get(date);
 
         if (dayAppointments != null && !dayAppointments.isEmpty())
@@ -175,6 +197,55 @@ public class CalendarView extends VBox
             Tooltip.install(cell, new Tooltip(text.toString().trim()));
         }
 
+        cell.setOnMouseClicked(e ->
+        {
+            selectedDate = date;
+            render();
+            e.consume();
+        });
+
         return cell;
+    }
+
+    private void renderDetails()
+    {
+        detailBox.getChildren().clear();
+
+        if (selectedDate == null)
+        {
+            detailBox.getChildren().add(detailLabel("Click a day to see its appointments.", "calendar-detail-hint"));
+            return;
+        }
+
+        detailBox.getChildren().add(detailLabel(selectedDate.format(DETAIL_FORMAT), "calendar-detail-title"));
+
+        List<Appointment> dayAppointments = appointmentsByDay.get(selectedDate);
+
+        if (dayAppointments == null || dayAppointments.isEmpty())
+        {
+            detailBox.getChildren().add(detailLabel("No appointments on this day.", "calendar-detail-hint"));
+            return;
+        }
+
+        dayAppointments.stream()
+            .sorted(Comparator.comparing(Appointment::getTime))
+            .forEach(a ->
+            {
+                Label time = detailLabel(a.getTime(), "calendar-detail-time");
+                time.setMinWidth(50);
+
+                Label title = detailLabel(a.getTitle(), "calendar-detail-item");
+
+                HBox row = new HBox(10, time, title);
+                row.setAlignment(Pos.CENTER_LEFT);
+                detailBox.getChildren().add(row);
+            });
+    }
+
+    private Label detailLabel(String text, String styleClass)
+    {
+        Label label = new Label(text);
+        label.getStyleClass().add(styleClass);
+        return label;
     }
 }
