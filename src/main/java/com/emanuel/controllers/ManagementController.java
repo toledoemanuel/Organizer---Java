@@ -88,6 +88,8 @@ public class ManagementController {
         {
             calendarView = new CalendarView();
             calendarView.setOnDayDoubleClick(this::addAppointmentOn);
+            calendarView.setOnAddRequest(this::addAppointmentOn);
+            calendarView.setOnRemoveRequest(this::removeWithUndo);
             calendarHolder.getChildren().add(calendarView);
             refreshCalendar();
         }
@@ -103,6 +105,23 @@ public class ManagementController {
             }
         });
     }
+
+    private void removeWithUndo(Schedulable item)
+    {
+        try
+        {
+            currentOrganizer.removeItem(item);
+            refreshUI();
+
+            ToastUtils.undo(recordsListView,
+                "\"" + item.getIdentifier() + "\" removed",
+                () -> undoRemove(item));
+        }
+        catch (ItemNotFoundException e)
+        {
+            ToastUtils.error(recordsListView, e.getMessage());
+        }
+    }   
 
     private void addAppointmentOn(LocalDate date)
     {
@@ -252,31 +271,17 @@ public class ManagementController {
     }
 
     @FXML
-    public void onRemoveClick(ActionEvent event) 
+    public void onRemoveClick(ActionEvent event)
     {
         Schedulable selectedItem = recordsListView.getSelectionModel().getSelectedItem();
 
-        if (selectedItem != null) 
-        {
-            try 
-            {
-                currentOrganizer.removeItem(selectedItem);
-                refreshUI();
-
-                ToastUtils.undo(recordsListView,
-                    "\"" + selectedItem.getIdentifier() + "\" removed",
-                    () -> undoRemove(selectedItem));
-            } 
-            
-            catch (ItemNotFoundException e) 
-            {
-                ToastUtils.error(recordsListView, e.getMessage());
-            }
-        } 
-        else
+        if (selectedItem == null)
         {
             ToastUtils.info(recordsListView, "Please select an item to remove.");
+            return;
         }
+
+        removeWithUndo(selectedItem);
     }
 
     private void undoRemove(Schedulable item)

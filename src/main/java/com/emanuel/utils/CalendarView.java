@@ -10,11 +10,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import com.emanuel.Appointment;
 import com.emanuel.Schedulable;
 
-import java.util.function.Consumer;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -40,13 +40,16 @@ public class CalendarView extends VBox
     private final Label monthLabel = new Label();
     private final GridPane grid = new GridPane();
     private final VBox detailBox = new VBox(6);
+    private final Map<LocalDate, VBox> cellsByDate = new HashMap<>();
 
     private YearMonth currentMonth = YearMonth.now();
     private LocalDate selectedDate = null;
+    private Appointment selectedAppointment = null;
     private Map<LocalDate, List<Appointment>> appointmentsByDay = new HashMap<>();
 
-    private final Map<LocalDate, VBox> cellsByDate = new HashMap<>();
     private Consumer<LocalDate> onDayDoubleClick;
+    private Consumer<LocalDate> onAddRequest;
+    private Consumer<Appointment> onRemoveRequest;
 
     public CalendarView()
     {
@@ -98,8 +101,8 @@ public class CalendarView extends VBox
         ScrollPane detailScroll = new ScrollPane(detailBox);
         detailScroll.setFitToWidth(true);
         detailScroll.setMinHeight(90);
-        detailScroll.setPrefHeight(100);
-        detailScroll.setMaxHeight(120);
+        detailScroll.setPrefHeight(120);
+        detailScroll.setMaxHeight(140);
         detailScroll.getStyleClass().add("calendar-detail");
 
         getChildren().addAll(header, grid, detailScroll);
@@ -121,7 +124,23 @@ public class CalendarView extends VBox
             }
         }
 
+        selectedAppointment = null;
         render();
+    }
+
+    public void setOnDayDoubleClick(Consumer<LocalDate> handler)
+    {
+        this.onDayDoubleClick = handler;
+    }
+
+    public void setOnAddRequest(Consumer<LocalDate> handler)
+    {
+        this.onAddRequest = handler;
+    }
+
+    public void setOnRemoveRequest(Consumer<Appointment> handler)
+    {
+        this.onRemoveRequest = handler;
     }
 
     private Button navButton(String text)
@@ -133,7 +152,6 @@ public class CalendarView extends VBox
 
     private void render()
     {
-        
         grid.getChildren().clear();
         cellsByDate.clear();
         monthLabel.setText(currentMonth.format(MONTH_FORMAT));
@@ -235,6 +253,7 @@ public class CalendarView extends VBox
             current.getStyleClass().add("calendar-cell-selected");
         }
 
+        selectedAppointment = null;
         renderDetails();
     }
 
@@ -248,7 +267,31 @@ public class CalendarView extends VBox
             return;
         }
 
-        detailBox.getChildren().add(detailLabel(selectedDate.format(DETAIL_FORMAT), "calendar-detail-title"));
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        Button addButton = navButton("+ Add");
+        addButton.setOnAction(e -> {
+            if (onAddRequest != null)
+            {
+                onAddRequest.accept(selectedDate);
+            }
+        });
+
+        Button removeButton = navButton("Remove");
+        removeButton.setDisable(selectedAppointment == null);
+        removeButton.setOnAction(e -> {
+            if (selectedAppointment != null && onRemoveRequest != null)
+            {
+                onRemoveRequest.accept(selectedAppointment);
+            }
+        });
+
+        HBox titleRow = new HBox(8,
+            detailLabel(selectedDate.format(DETAIL_FORMAT), "calendar-detail-title"),
+            spacer, addButton, removeButton);
+        titleRow.setAlignment(Pos.CENTER_LEFT);
+        detailBox.getChildren().add(titleRow);
 
         List<Appointment> dayAppointments = appointmentsByDay.get(selectedDate);
 
@@ -265,10 +308,20 @@ public class CalendarView extends VBox
                 Label time = detailLabel(a.getTime(), "calendar-detail-time");
                 time.setMinWidth(50);
 
-                Label title = detailLabel(a.getTitle(), "calendar-detail-item");
-
-                HBox row = new HBox(10, time, title);
+                HBox row = new HBox(10, time, detailLabel(a.getTitle(), "calendar-detail-item"));
                 row.setAlignment(Pos.CENTER_LEFT);
+                row.getStyleClass().add("calendar-detail-row");
+
+                if (a == selectedAppointment)
+                {
+                    row.getStyleClass().add("calendar-detail-row-selected");
+                }
+
+                row.setOnMouseClicked(e -> {
+                    selectedAppointment = (a == selectedAppointment) ? null : a;
+                    renderDetails();
+                });
+
                 detailBox.getChildren().add(row);
             });
     }
@@ -279,11 +332,4 @@ public class CalendarView extends VBox
         label.getStyleClass().add(styleClass);
         return label;
     }
-
-    public void setOnDayDoubleClick(Consumer<LocalDate> handler)
-    {
-        this.onDayDoubleClick = handler;
-    }
-
-
 }

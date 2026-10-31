@@ -333,3 +333,27 @@
     -fx-font-size: 12px;
     -fx-text-fill: #9a9a9a;
 }
+
+.calendar-detail-row
+{
+    -fx-padding: 3 6 3 6;
+    -fx-background-radius: 4;
+    -fx-cursor: hand;
+}
+
+.calendar-detail-row:hover
+{
+    -fx-background-color: #3d4348;
+}
+
+.calendar-detail-row-selected,
+.calendar-detail-row-selected:hover
+{
+    -fx-background-color: #5bc0de;
+}
+
+.calendar-detail-row-selected .calendar-detail-time,
+.calendar-detail-row-selected .calendar-detail-item
+{
+    -fx-text-fill: #1a1a1a;
+}
