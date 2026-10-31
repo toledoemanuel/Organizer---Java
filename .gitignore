@@ -22,5 +22,6 @@ buildNumber.properties
 .project
 .settings/
 .idea/
+.dist/
 *.iml
 *.csv

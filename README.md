@@ -29,15 +29,21 @@ Data is stored locally in CSV files, so there is no database or account to set u
 
 ## Download and run
 
-Requires **Java 17 or later**. The released jar is built for **Windows**.
+Requires **Java 17 or later**. Pick the jar for your system on the
+[Releases](https://github.com/toledoemanuel/Organizer---Java/releases) page:
 
-1. Download `personal-organizer-1.1.0-standalone.jar` from the
-   [Releases](https://github.com/toledoemanuel/Organizer---Java/releases) page.
-2. Run it:
+| System | File |
+|---|---|
+| Windows | `personal-organizer-1.1.1-win.jar` |
+| Linux | `personal-organizer-1.1.1-linux.jar` |
+| macOS (Intel) | `personal-organizer-1.1.1-mac.jar` |
+| macOS (Apple Silicon: M1 or newer) | `personal-organizer-1.1.1-mac-aarch64.jar` |
 
-   ```bash
-   java -jar personal-organizer.jar
-   ```
+Then run it (replace `win` with your system):
+
+```bash
+java -jar personal-organizer-1.1.1-win.jar
+```
 
 Your data is saved as CSV files in the folder where you run the jar.
 
@@ -47,15 +53,20 @@ Requires JDK 17+ and Maven.
 
 ```bash
 git clone https://github.com/toledoemanuel/Organizer---Java.git
-cd <your-repo>
+cd Organizer---Java
 mvn clean package
-java -jar target/personal-organizer-1.1.0-standalone.jar
+java -jar target/personal-organizer-1.1.1-win.jar
 ```
+
+The default build targets Windows. For another system, pick a profile:
+`-Plinux`, `-Pmac` or `-Pmac-aarch64`. The jar is generated as
+`target/personal-organizer-1.1.1-<system>.jar`.
 
 To run directly from Maven during development:
 
 ```bash
 mvn javafx:run
+```
 ```
 
 ## Project structure
