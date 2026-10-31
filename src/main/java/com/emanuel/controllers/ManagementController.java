@@ -17,6 +17,9 @@ import javafx.scene.control.TextField;
 
 import java.io.IOException;
 
+import javafx.collections.transformation.SortedList;
+import javafx.scene.control.Button;
+
 import com.emanuel.Contact;
 import com.emanuel.Appointment;
 import com.emanuel.Organizer;
@@ -25,6 +28,8 @@ import com.emanuel.exceptions.DuplicateItemException;
 import com.emanuel.exceptions.InvalidItemException;
 import com.emanuel.exceptions.ItemNotFoundException;
 import com.emanuel.utils.DialogUtils;
+import com.emanuel.utils.SearchFilter;
+import com.emanuel.utils.SortUtils;
 
 public class ManagementController {
 
@@ -38,6 +43,13 @@ public class ManagementController {
     private ObservableList<Schedulable> uiList; 
     private String currentType;
 
+    @FXML
+    private Button sortButton;
+
+    private SortedList<Schedulable> sortedData;
+    private boolean ascending = true;
+
+
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void initData(String type, Organizer<?> organizer) 
     {
@@ -49,45 +61,21 @@ public class ManagementController {
 
         FilteredList<Schedulable> filteredData = new FilteredList<>(uiList, b -> true);
 
-        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
-            filteredData.setPredicate(item -> {
-                if (newValue == null || newValue.isEmpty())
-                {
-                    return true;
-                }
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> 
+            filteredData.setPredicate(item -> SearchFilter.matches(item, newValue)));
 
-                String lowerCaseFilter = newValue.toLowerCase();
+        this.sortedData = new SortedList<>(filteredData);
+        this.recordsListView.setItems(sortedData);
 
-                if (item.getIdentifier().toLowerCase().contains(lowerCaseFilter))
-                {
-                    return true;
-                }
-
-                if (item instanceof Contact)
-                {
-                    Contact contact = (Contact) item;
-
-                    if (contact.getPhone().contains(lowerCaseFilter))
-                    {
-                        return true;
-                    }
-                }
-
-                if (item instanceof Appointment)
-                {
-                    Appointment appointment = (Appointment) item;
-
-                    if (appointment.getDate().contains(lowerCaseFilter) || appointment.getTime().contains(lowerCaseFilter))
-                    {
-                        return true;
-                    }
-                }
-
-                return false;
-            });
-        });
-
-        this.recordsListView.setItems(filteredData);
+        if (type.equals("Contacts"))
+        {
+            applySort();
+        }
+        else
+        {
+            sortButton.setVisible(false);
+            sortButton.setManaged(false);
+        }
 
         // Update on mouse double-click 
         this.recordsListView.setOnMouseClicked(event -> {
@@ -101,6 +89,19 @@ public class ManagementController {
     private void refreshUI()
     {
         this.uiList.setAll(this.currentOrganizer.getAllItems());
+    }
+
+    private void applySort()
+    {
+        sortedData.setComparator(SortUtils.byName(ascending));
+        sortButton.setText(ascending ? "A → Z" : "Z → A");
+    }
+
+    @FXML
+    public void onSortToggleClick(ActionEvent event)
+    {
+        ascending = !ascending;
+        applySort();
     }
 
     @FXML 

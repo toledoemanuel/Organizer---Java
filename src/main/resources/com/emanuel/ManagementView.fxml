@@ -9,11 +9,12 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 
-
-<BorderPane minHeight="400.0" minWidth="600.0" onMouseClicked="#onBackgroundClick" prefHeight="500.0" prefWidth="750.0" style="-fx-background-color: #f4f4f4;" stylesheets="@style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.emanuel.controllers.ManagementController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#onBackgroundClick" style="-fx-background-color: #f4f4f4;" stylesheets="@style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.emanuel.controllers.ManagementController">
    <left>
-      <VBox alignment="TOP_CENTER" minWidth="-Infinity" prefWidth="220.0" spacing="12.0" style="-fx-background-color: #2b2b2b;" BorderPane.alignment="CENTER">
+      <VBox alignment="TOP_CENTER" prefWidth="220.0" spacing="12.0" style="-fx-background-color: #2b2b2b;" BorderPane.alignment="CENTER">
          <padding>
             <Insets bottom="20.0" left="20.0" right="20.0" top="30.0" />
          </padding>
@@ -53,18 +54,24 @@
       </VBox>
    </left>
    <center>
-      <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="15.0" styleClass="root" BorderPane.alignment="CENTER">
+      <VBox spacing="15.0" styleClass="root" BorderPane.alignment="CENTER">
          <padding>
             <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
          </padding>
          <children>
-            <Label text="Records List">
-               <font>
-                  <Font name="System Bold" size="18.0" />
-               </font>
-            </Label>
-            <TextField fx:id="searchField" maxWidth="1.7976931348623157E308" promptText="Search..." />
-            <ListView fx:id="recordsListView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+               <children>
+                  <Label text="Records List">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                  </Label>
+                  <Region HBox.hgrow="ALWAYS" />
+                  <Button fx:id="sortButton" mnemonicParsing="false" onAction="#onSortToggleClick" style="-fx-padding: 5 12 5 12; -fx-font-size: 12px;" text="A → Z" />
+               </children>
+            </HBox>
+            <TextField fx:id="searchField" promptText="Search..." />
+            <ListView fx:id="recordsListView" prefHeight="400.0" prefWidth="480.0" VBox.vgrow="ALWAYS">
                <styleClass>
                   <String fx:value="list-cell" />
                   <String fx:value="list-view" />

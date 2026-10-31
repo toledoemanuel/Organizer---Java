@@ -116,8 +116,8 @@ public class MainController
                     System.out.println("Error removing old appointments: " + e.getMessage());
                 }
 
-                DialogUtils.showAlert("System notice", oldAppointments.size() + " past appointments were automatically removed");
             }
+            DialogUtils.showAlert("System notice", oldAppointments.size() + " past appointments were automatically removed");
         }
 
         openManagementView(event, "Appointments", appointmentOrganizer);
