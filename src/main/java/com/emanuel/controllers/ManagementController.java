@@ -274,27 +274,7 @@ public class ManagementController {
         } 
         else if (currentType.equals("Appointments"))
         {
-            String title = DialogUtils.askInput("Add Appointment", "Title:");
-            if (title == null) return;
-
-            String date = DialogUtils.askDateInput("Add Appointment", "Date (e.g., DD/MM/YYYY):", "");
-            if (date == null) return;
-
-            String time = DialogUtils.askInput("Add Appointment", "Time (e.g., HH:MM):");
-            if (time == null) return;
-
-            try 
-            {
-                Appointment newAppointment = new Appointment(title, date, time);
-                currentOrganizer.add(newAppointment);
-                ToastUtils.success(recordsListView, "Appointment added successfully");
-                refreshUI();
-            } 
-            
-            catch (InvalidItemException | DuplicateItemException e) 
-            {
-                ToastUtils.error(recordsListView, e.getMessage());
-            }
+            addAppointment("");
         }
     }
 
