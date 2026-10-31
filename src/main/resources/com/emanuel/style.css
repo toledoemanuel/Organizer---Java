@@ -357,3 +357,9 @@
 {
     -fx-text-fill: #1a1a1a;
 }
+
+.empty-state
+{
+    -fx-font-size: 15px;
+    -fx-text-fill: #9a9a9a;
+}

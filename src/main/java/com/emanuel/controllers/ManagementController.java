@@ -11,17 +11,19 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
-
 import javafx.collections.transformation.FilteredList;
 import javafx.scene.control.TextField;
+import javafx.collections.ListChangeListener;
+import javafx.scene.text.TextAlignment;
+import javafx.collections.transformation.SortedList;
+import javafx.scene.control.Button;
+import javafx.scene.layout.StackPane;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import java.io.IOException;
 
-import javafx.collections.transformation.SortedList;
-import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
 
 import com.emanuel.utils.CalendarView;
 import com.emanuel.Contact;
@@ -64,6 +66,8 @@ public class ManagementController {
     private CalendarView calendarView;
     private boolean calendarMode = false;
 
+    private final Label placeholderLabel = new Label();
+
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void initData(String type, Organizer<?> organizer) 
     {
@@ -75,12 +79,22 @@ public class ManagementController {
 
         FilteredList<Schedulable> filteredData = new FilteredList<>(uiList, b -> true);
 
-        searchField.textProperty().addListener((observable, oldValue, newValue) -> 
-            filteredData.setPredicate(item -> SearchFilter.matches(item, newValue)));
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredData.setPredicate(item -> SearchFilter.matches(item, newValue));
+            updatePlaceholder();
+        });
 
         this.sortedData = new SortedList<>(filteredData);
         this.recordsListView.setItems(sortedData);
         this.recordsListView.setCellFactory(lv -> new RecordCell());
+
+        placeholderLabel.setWrapText(true);
+        placeholderLabel.setTextAlignment(TextAlignment.CENTER);
+        placeholderLabel.getStyleClass().add("empty-state");
+        recordsListView.setPlaceholder(placeholderLabel);
+
+        sortedData.addListener((ListChangeListener<Schedulable>) change -> updatePlaceholder());
+        updatePlaceholder();
 
         applySort();
 
@@ -97,6 +111,7 @@ public class ManagementController {
         {
             show(viewButton, false);  
         }
+
 
         this.recordsListView.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2)
@@ -168,6 +183,19 @@ public class ManagementController {
         if (calendarView != null)
         {
             calendarView.setAppointments(uiList);
+        }
+    }
+
+    private void updatePlaceholder()
+    {
+        if (uiList.isEmpty())
+        {
+            String noun = currentType.equals("Contacts") ? "contacts" : "appointments";
+            placeholderLabel.setText("No " + noun + " yet.\nClick Add to get started.");
+        }
+        else
+        {
+            placeholderLabel.setText("No results for \"" + searchField.getText() + "\".");
         }
     }
 
