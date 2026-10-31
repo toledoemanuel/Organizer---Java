@@ -7,14 +7,14 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#onBackgroundClick" style="-fx-background-color: #f4f4f4;" stylesheets="@style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.emanuel.controllers.ManagementController">
+<BorderPane minHeight="400.0" minWidth="600.0" onMouseClicked="#onBackgroundClick" prefHeight="500.0" prefWidth="750.0" style="-fx-background-color: #f4f4f4;" stylesheets="@style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.emanuel.controllers.ManagementController">
    <left>
-      <VBox alignment="TOP_CENTER" prefWidth="220.0" spacing="12.0" style="-fx-background-color: #2b2b2b;" BorderPane.alignment="CENTER">
+      <VBox alignment="TOP_CENTER" minWidth="-Infinity" prefWidth="220.0" spacing="12.0" style="-fx-background-color: #2b2b2b;" BorderPane.alignment="CENTER">
          <padding>
             <Insets bottom="20.0" left="20.0" right="20.0" top="30.0" />
          </padding>
@@ -27,25 +27,37 @@
                   <Insets bottom="15.0" />
                </VBox.margin>
             </Label>
-            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onAddClick" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-cursor: hand;" text="Add">
+            <Button graphicTextGap="8.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onAddClick" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-cursor: hand;" text="Add">
                <font>
                   <Font size="13.0" />
                </font>
+               <graphic>
+                  <Region styleClass="icon, icon-add" />
+               </graphic>
             </Button>
-            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onRemoveClick" style="-fx-background-color: #c0392b; -fx-text-fill: white; -fx-cursor: hand;" text="Remove">
+            <Button graphicTextGap="8.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onRemoveClick" style="-fx-background-color: #c0392b; -fx-text-fill: white; -fx-cursor: hand;" text="Remove">
                <font>
                   <Font size="13.0" />
                </font>
+               <graphic>
+                  <Region styleClass="icon, icon-remove" />
+               </graphic>
             </Button>
-            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onUpdateClick" style="-fx-background-color: #d35400; -fx-text-fill: white; -fx-cursor: hand;" text="Update">
+            <Button graphicTextGap="8.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onUpdateClick" style="-fx-background-color: #d35400; -fx-text-fill: white; -fx-cursor: hand;" text="Update">
                <font>
                   <Font size="13.0" />
                </font>
+               <graphic>
+                  <Region styleClass="icon, icon-update" />
+               </graphic>
             </Button>
-            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onBackToMenuClick" style="-fx-background-color: #7f8c8d; -fx-text-fill: white; -fx-cursor: hand;" text="Back to Menu">
+            <Button graphicTextGap="8.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onBackToMenuClick" style="-fx-background-color: #7f8c8d; -fx-text-fill: white; -fx-cursor: hand;" text="Back to Menu">
                <font>
                   <Font size="13.0" />
                </font>
+               <graphic>
+                  <Region styleClass="icon, icon-back" />
+               </graphic>
                <VBox.margin>
                   <Insets top="60.0" />
                </VBox.margin>
@@ -54,7 +66,7 @@
       </VBox>
    </left>
    <center>
-      <VBox spacing="15.0" styleClass="root" BorderPane.alignment="CENTER">
+      <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="15.0" styleClass="root" BorderPane.alignment="CENTER">
          <padding>
             <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
          </padding>
@@ -70,8 +82,8 @@
                   <Button fx:id="sortButton" mnemonicParsing="false" onAction="#onSortToggleClick" style="-fx-padding: 5 12 5 12; -fx-font-size: 12px;" text="A → Z" />
                </children>
             </HBox>
-            <TextField fx:id="searchField" promptText="Search..." />
-            <ListView fx:id="recordsListView" prefHeight="400.0" prefWidth="480.0" VBox.vgrow="ALWAYS">
+            <TextField fx:id="searchField" maxWidth="1.7976931348623157E308" promptText="Search..." />
+            <ListView fx:id="recordsListView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
                <styleClass>
                   <String fx:value="list-cell" />
                   <String fx:value="list-view" />
