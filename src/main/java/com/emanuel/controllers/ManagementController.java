@@ -28,6 +28,7 @@ import com.emanuel.exceptions.DuplicateItemException;
 import com.emanuel.exceptions.InvalidItemException;
 import com.emanuel.exceptions.ItemNotFoundException;
 import com.emanuel.utils.DialogUtils;
+import com.emanuel.utils.RecordCell;
 import com.emanuel.utils.SearchFilter;
 import com.emanuel.utils.SortUtils;
 import com.emanuel.utils.ToastUtils;
@@ -67,6 +68,7 @@ public class ManagementController {
 
         this.sortedData = new SortedList<>(filteredData);
         this.recordsListView.setItems(sortedData);
+        this.recordsListView.setCellFactory(lv -> new RecordCell());
 
         applySort();
 
