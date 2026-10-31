@@ -24,6 +24,15 @@ public class Organizer<T extends Schedulable>
         items.add(item);
     }
 
+    public void removeItem(T item)
+        throws ItemNotFoundException{
+
+        if (!items.remove(item))
+        {
+            throw new ItemNotFoundException("Error: Item not found.");
+        }
+    }
+
     public void remove(String identifier)
         throws ItemNotFoundException{
 

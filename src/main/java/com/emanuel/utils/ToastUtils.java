@@ -3,9 +3,12 @@ package com.emanuel.utils;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Popup;
@@ -18,7 +21,9 @@ public class ToastUtils
     {
         SUCCESS("#27ae60", 2.5),
         ERROR("#c0392b", 4.0),
-        INFO("#3c3f41", 3.0);
+        INFO("#3c3f41", 3.0),
+        UNDO("#3c3f41", 6.0);
+
 
         private final String color;
         private final double seconds;
@@ -35,20 +40,25 @@ public class ToastUtils
 
     public static void success(Node anchor, String message)
     {
-        show(anchor, message, Type.SUCCESS);
+        show(anchor, message, Type.SUCCESS, null, null);
     }
 
     public static void error(Node anchor, String message)
     {
-        show(anchor, message, Type.ERROR);
+        show(anchor, message, Type.ERROR, null, null);
     }
 
     public static void info(Node anchor, String message)
     {
-        show(anchor, message, Type.INFO);
+        show(anchor, message, Type.INFO, null, null);
     }
 
-    private static void show(Node anchor, String message, Type type)
+    public static void undo(Node anchor, String message, Runnable onUndo)
+    {
+        show(anchor, message, Type.UNDO, "Undo", onUndo);
+    }
+
+    private static void show(Node anchor, String message, Type type, String actionText, Runnable onAction)
     {
         if (anchor == null || anchor.getScene() == null || anchor.getScene().getWindow() == null)
         {
@@ -62,17 +72,37 @@ public class ToastUtils
         Label label = new Label(message);
         label.setWrapText(true);
         label.setMaxWidth(320);
-        label.setStyle(
+        label.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;");
+
+        HBox content = new HBox(16, label);
+        content.setAlignment(Pos.CENTER_LEFT);
+        content.setStyle(
             "-fx-background-color: " + type.color + ";" +
-            "-fx-text-fill: white;" +
-            "-fx-font-size: 14px;" +
-            "-fx-font-weight: bold;" +
             "-fx-padding: 12 20 12 20;" +
             "-fx-background-radius: 8;");
+        content.setEffect(new DropShadow(10, Color.rgb(0, 0, 0, 0.4)));
 
-        StackPane box = new StackPane(label);
+        if (actionText != null)
+        {
+            Button actionButton = new Button(actionText);
+            actionButton.setStyle(
+                "-fx-background-color: transparent;" +
+                "-fx-text-fill: #5bc0de;" +
+                "-fx-font-size: 14px;" +
+                "-fx-font-weight: bold;" +
+                "-fx-padding: 0;" +
+                "-fx-cursor: hand;");
+
+            actionButton.setOnAction(e -> {
+                dismissCurrent();
+                onAction.run();
+            });
+
+            content.getChildren().add(actionButton);
+        }
+
+        StackPane box = new StackPane(content);
         box.setStyle("-fx-padding: 12;");
-        label.setEffect(new DropShadow(10, Color.rgb(0, 0, 0, 0.4)));
         box.setOpacity(0);
 
         Popup popup = new Popup();

@@ -170,9 +170,12 @@ public class ManagementController {
         {
             try 
             {
-                currentOrganizer.remove(selectedItem.getIdentifier());
-                ToastUtils.success(recordsListView,"Item removed successfully");
+                currentOrganizer.removeItem(selectedItem);
                 refreshUI();
+
+                ToastUtils.undo(recordsListView,
+                    "\"" + selectedItem.getIdentifier() + "\" removed",
+                    () -> undoRemove(selectedItem));
             } 
             
             catch (ItemNotFoundException e) 
@@ -183,6 +186,20 @@ public class ManagementController {
         else
         {
             ToastUtils.info(recordsListView, "Please select an item to remove.");
+        }
+    }
+
+    private void undoRemove(Schedulable item)
+    {
+        try
+        {
+            currentOrganizer.add(item);
+            refreshUI();
+            ToastUtils.success(recordsListView, "\"" + item.getIdentifier() + "\" restored");
+        }
+        catch (DuplicateItemException e)
+        {
+            ToastUtils.error(recordsListView, e.getMessage());
         }
     }
 
